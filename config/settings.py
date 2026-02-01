@@ -46,7 +46,7 @@ class Settings:
         elif provider == "anthropic":
             from langchain_anthropic import ChatAnthropic
             return ChatAnthropic(
-                model="claude-3-sonnet-20240229",
+                model=model_override or "claude-3-5-sonnet-20241022",  # Updated to latest model
                 temperature=self.temperature,
                 api_key=self.anthropic_api_key
             )

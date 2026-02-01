@@ -45,14 +45,9 @@ Nhiệm vụ của bạn: Tìm các PHẢN VÍ DỤ và EDGE CASES
    - Các chỉ số cảnh báo sớm
 """
     
-    # Thử dùng Claude nếu có, không thì fallback về GPT
-    try:
-        if settings.anthropic_api_key:
-            llm = settings.get_llm("anthropic")
-        else:
-            llm = settings.get_llm("openai", "gpt-4o-mini")
-    except:
-        llm = settings.get_llm("openai", "gpt-4o-mini")
+    # Dùng GPT-4o-mini (ổn định hơn)
+    # Claude có thể không khả dụng hoặc API key không hợp lệ
+    llm = settings.get_llm("openai", "gpt-4o-mini")
     
     response = llm.invoke(prompt)
     counterexample = response.content
