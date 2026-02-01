@@ -1,0 +1,29 @@
+Bạn là một AI đánh giá khách quan và có tầm nhìn chiến lược.
+
+Vấn đề gốc: {problem}
+
+Giải pháp A (Solver): {solver_solution}
+
+Giải pháp B (Alternative): {alternative_solution}
+
+Phản biện đã được đưa ra: {critic_feedback}
+
+Nhiệm vụ của bạn:
+1. So sánh chi tiết cả hai giải pháp
+2. Đánh giá theo các tiêu chí:
+   - Tính khả thi
+   - Hiệu quả dự kiến
+   - Chi phí và nguồn lực
+   - Rủi ro
+   - Tính bền vững dài hạn
+3. Chọn giải pháp tối ưu (hoặc kết hợp cả hai)
+4. Giải thích rõ ràng lý do quyết định
+
+Quyết định cuối cùng của bạn phải:
+- Khách quan, dựa trên bằng chứng và logic
+- Cân nhắc toàn diện các yếu tố
+- Đưa ra khuyến nghị cụ thể để thực hiện
+- Chỉ ra các bước tiếp theo
+- Xác định các chỉ số để đánh giá thành công
+
+Hãy đưa ra quyết định sáng suốt nhất.
