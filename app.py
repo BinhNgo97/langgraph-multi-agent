@@ -148,21 +148,29 @@ if prompt := st.chat_input("Nhập vấn đề cần giải quyết..."):
                 
                 # Initial state
                 initial_state = {
-                    "problem": prompt,
-                    "solver_solution": "",
-                    "alternative_solution": "",
+                    "raw_problem": prompt,
+                    "problem": "",
+                    "context": "",
+                    "proposer_solution": "",
                     "critic_feedback": "",
+                    "challenger_counterexample": "",
+                    "synthesizer_result": "",
                     "final_decision": "",
                     "final_reasoning": "",
+                    "key_points": {},
                     "iteration": 0,
+                    "quality_score": 0.0,
+                    "should_continue": True,
                     "messages": []
                 }
                 
                 # Create containers for each agent
-                solver_container = st.container()
+                normalizer_container = st.container()
+                proposer_container = st.container()
                 critic_container = st.container()
-                alternative_container = st.container()
-                judge_container = st.container()
+                challenger_container = st.container()
+                synthesizer_container = st.container()
+                final_container = st.container()
                 
                 # Run graph
                 result = None
@@ -172,32 +180,47 @@ if prompt := st.chat_input("Nhập vấn đề cần giải quyết..."):
                     for node_name, node_output in output.items():
                         iteration = node_output.get("iteration", 0)
                         
-                        if node_name == "solver":
-                            with solver_container:
+                        if node_name == "input_normalizer":
+                            with normalizer_container:
                                 st.markdown(f'<div class="agent-box solver-box">', unsafe_allow_html=True)
-                                st.markdown(f"**🔵 Solver** - Vòng {iteration}")
-                                st.markdown(node_output.get("solver_solution", ""))
+                                st.markdown("**🔍 Input Normalizer** - Phân tích vấn đề")
+                                st.markdown(node_output.get("problem", ""))
+                                st.markdown('</div>', unsafe_allow_html=True)
+                        
+                        elif node_name == "proposer":
+                            with proposer_container:
+                                st.markdown(f'<div class="agent-box solver-box">', unsafe_allow_html=True)
+                                st.markdown(f"**🔵 AI #1: Proposer** - Vòng {iteration} (GPT-4o-mini)")
+                                st.markdown(node_output.get("proposer_solution", ""))
                                 st.markdown('</div>', unsafe_allow_html=True)
                         
                         elif node_name == "critic":
                             with critic_container:
                                 st.markdown(f'<div class="agent-box critic-box">', unsafe_allow_html=True)
-                                st.markdown(f"**🟠 Critic** - Vòng {iteration}")
+                                st.markdown(f"**🟠 AI #2: Critic** - Vòng {iteration} (GPT-4o)")
                                 st.markdown(node_output.get("critic_feedback", ""))
                                 st.markdown('</div>', unsafe_allow_html=True)
                         
-                        elif node_name == "alternative":
-                            with alternative_container:
+                        elif node_name == "challenger":
+                            with challenger_container:
                                 st.markdown(f'<div class="agent-box alternative-box">', unsafe_allow_html=True)
-                                st.markdown(f"**🟣 Alternative** - Vòng {iteration}")
-                                st.markdown(node_output.get("alternative_solution", ""))
+                                st.markdown(f"**🟣 AI #3: Challenger** - Vòng {iteration} (Claude/GPT)")
+                                st.markdown(node_output.get("challenger_counterexample", ""))
+                                st.markdown('</div>', unsafe_allow_html=True)
+                        
+                        elif node_name == "synthesizer":
+                            score = node_output.get("quality_score", 0)
+                            with synthesizer_container:
+                                st.markdown(f'<div class="agent-box judge-box">', unsafe_allow_html=True)
+                                st.markdown(f"**🟢 AI #4: Synthesizer** - Vòng {iteration} (GPT-4o) - Điểm: {score}/10")
+                                st.markdown(node_output.get("synthesizer_result", ""))
                                 st.markdown('</div>', unsafe_allow_html=True)
                             current_iteration = iteration
                         
-                        elif node_name == "judge":
-                            with judge_container:
+                        elif node_name == "final_decision":
+                            with final_container:
                                 st.markdown(f'<div class="agent-box judge-box">', unsafe_allow_html=True)
-                                st.markdown("**🟢 Judge - Quyết định cuối cùng**")
+                                st.markdown("**🎯 Final Decision - Kết luận cuối cùng**")
                                 st.markdown(node_output.get("final_decision", ""))
                                 st.markdown('</div>', unsafe_allow_html=True)
                             result = node_output

@@ -34,12 +34,12 @@ class Settings:
         # Paths
         self.prompts_dir = Path(__file__).parent.parent / "prompts"
         
-    def get_llm(self, provider="openai"):
+    def get_llm(self, provider="openai", model_override=None):
         """Get LLM instance based on provider"""
         if provider == "openai":
             from langchain_openai import ChatOpenAI
             return ChatOpenAI(
-                model=self.model_name,
+                model=model_override or self.model_name,
                 temperature=self.temperature,
                 api_key=self.openai_api_key
             )

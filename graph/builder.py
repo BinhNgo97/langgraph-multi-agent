@@ -1,70 +1,82 @@
 from langgraph.graph import StateGraph, END
 from graph.state import GraphState
-from agents.gpt_agent import solver_node
-from agents.critic_agent import critic_node
-from agents.final_agent import alternative_node, judge_node
+from agents.input_normalizer import input_normalizer_node
+from agents.proposer_agent import proposer_node
+from agents.new_critic_agent import critic_node
+from agents.challenger_agent import challenger_node
+from agents.synthesizer_agent import synthesizer_node
+from agents.final_decision_agent import final_decision_node
 
 
-def should_continue(state: GraphState) -> str:
+def should_continue_loop(state: GraphState) -> str:
     """
-    Quyết định xem có tiếp tục vòng lặp không
+    Quyết định có tiếp tục vòng lặp tranh luận không
+    Dựa trên quality_score và số lần lặp
     """
+    should_continue = state.get("should_continue", False)
+    quality_score = state.get("quality_score", 0)
     iteration = state.get("iteration", 0)
     
-    # Nếu có final_decision rồi thì kết thúc
-    if state.get("final_decision"):
-        return "end"
+    # Nếu chất lượng đủ tốt (>= 8.0) hoặc đã đủ số vòng
+    if not should_continue or quality_score >= 8.0 or iteration >= 4:
+        return "finalize"
     
-    # Giới hạn số lần lặp
-    if iteration >= 5:
-        return "judge"
-    
-    # Tiếp tục vòng phản biện
+    # Tiếp tục vòng lặp
     return "continue"
 
 
 def build_graph():
     """
-    Xây dựng LangGraph workflow
+    Xây dựng LangGraph workflow mới
     
     Flow:
-    1. Solver: Đưa ra giải pháp ban đầu
-    2. Critic: Phản biện giải pháp
-    3. Alternative: Đưa ra phương án thay thế
-    4. Judge: Đánh giá và chọn giải pháp tối ưu
+    1. Input Normalizer: Làm rõ vấn đề
+    2. Proposer (GPT-4o-mini): Đưa ra giải pháp
+    3. Critic (GPT-4o): Phản biện
+    4. Challenger (Claude/GPT): Tìm phản ví dụ
+    5. Synthesizer (GPT-4o): Tổng hợp và đánh giá
+    6. Loop nếu chưa đủ tốt (quality_score < 8.0)
+    7. Final Decision: Kết luận với key points
     """
     
     # Khởi tạo graph
     workflow = StateGraph(GraphState)
     
     # Thêm các nodes (agents)
-    workflow.add_node("solver", solver_node)
+    workflow.add_node("input_normalizer", input_normalizer_node)
+    workflow.add_node("proposer", proposer_node)
     workflow.add_node("critic", critic_node)
-    workflow.add_node("alternative", alternative_node)
-    workflow.add_node("judge", judge_node)
+    workflow.add_node("challenger", challenger_node)
+    workflow.add_node("synthesizer", synthesizer_node)
+    workflow.add_node("final_decision", final_decision_node)
     
     # Định nghĩa edges (luồng chạy)
-    workflow.set_entry_point("solver")
+    workflow.set_entry_point("input_normalizer")
     
-    # Solver -> Critic
-    workflow.add_edge("solver", "critic")
+    # Input Normalizer -> Proposer
+    workflow.add_edge("input_normalizer", "proposer")
     
-    # Critic -> Alternative
-    workflow.add_edge("critic", "alternative")
+    # Proposer -> Critic
+    workflow.add_edge("proposer", "critic")
     
-    # Alternative -> Judge (hoặc tiếp tục)
+    # Critic -> Challenger
+    workflow.add_edge("critic", "challenger")
+    
+    # Challenger -> Synthesizer
+    workflow.add_edge("challenger", "synthesizer")
+    
+    # Synthesizer -> Continue hoặc Finalize
     workflow.add_conditional_edges(
-        "alternative",
-        should_continue,
+        "synthesizer",
+        should_continue_loop,
         {
-            "continue": "critic",  # Quay lại vòng phản biện
-            "judge": "judge",       # Đi đến judge để kết thúc
-            "end": END
+            "continue": "proposer",  # Quay lại proposer để cải thiện
+            "finalize": "final_decision"
         }
     )
     
-    # Judge -> END
-    workflow.add_edge("judge", END)
+    # Final Decision -> END
+    workflow.add_edge("final_decision", END)
     
     # Compile graph
     app = workflow.compile()

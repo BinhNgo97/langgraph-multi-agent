@@ -38,23 +38,29 @@ def run_graph(problem: str):
     print()
     
     # Build graph
-    print("🔄 Đang khởi tạo hệ thống...")
+    print("🔄 Đang khởi tạo hệ thống AI đa tác tử...")
     app = build_graph()
     
     # Khởi tạo state
     initial_state = {
-        "problem": problem,
-        "solver_solution": "",
-        "alternative_solution": "",
+        "raw_problem": problem,
+        "problem": "",
+        "context": "",
+        "proposer_solution": "",
         "critic_feedback": "",
+        "challenger_counterexample": "",
+        "synthesizer_result": "",
         "final_decision": "",
         "final_reasoning": "",
+        "key_points": {},
         "iteration": 0,
+        "quality_score": 0.0,
+        "should_continue": True,
         "messages": []
     }
     
     # Chạy graph
-    print("✅ Bắt đầu phân tích...\n")
+    print("✅ Bắt đầu phân tích với 4 AI agents...\n")
     
     try:
         # Invoke graph và theo dõi từng bước
@@ -63,34 +69,41 @@ def run_graph(problem: str):
             for node_name, node_output in output.items():
                 iteration = node_output.get("iteration", 0)
                 
-                if node_name == "solver":
-                    print_step("Solver - Đưa ra giải pháp", 
-                              node_output.get("solver_solution", ""), 
+                if node_name == "input_normalizer":
+                    print_step("Input Normalizer - Phân tích vấn đề", 
+                              node_output.get("problem", "")[:500] + "...")
+                
+                elif node_name == "proposer":
+                    print_step("AI #1: Proposer - Đề xuất giải pháp", 
+                              node_output.get("proposer_solution", ""), 
                               iteration)
                 
                 elif node_name == "critic":
-                    print_step("Critic - Phản biện", 
+                    print_step("AI #2: Critic - Phản biện", 
                               node_output.get("critic_feedback", ""), 
                               iteration)
                 
-                elif node_name == "alternative":
-                    print_step("Alternative - Phương án thay thế", 
-                              node_output.get("alternative_solution", ""), 
+                elif node_name == "challenger":
+                    print_step("AI #3: Challenger - Phản ví dụ", 
+                              node_output.get("challenger_counterexample", ""), 
                               iteration)
                 
-                elif node_name == "judge":
-                    print_step("Judge - Quyết định cuối cùng", 
+                elif node_name == "synthesizer":
+                    score = node_output.get("quality_score", 0)
+                    print_step(f"AI #4: Synthesizer - Tổng hợp (Điểm: {score}/10)", 
+                              node_output.get("synthesizer_result", "")[:500] + "...", 
+                              iteration)
+                
+                elif node_name == "final_decision":
+                    print_step("Final Decision - Kết luận cuối cùng", 
                               node_output.get("final_decision", ""))
                     result = node_output
         
         # In kết quả cuối cùng
-        if result and result.get("final_decision"):
+        if result:
             print("\n" + "=" * 70)
-            print("🎯 KẾT QUẢ CUỐI CÙNG")
+            print("✅ Hoàn thành phân tích")
             print("=" * 70)
-            print(result["final_decision"])
-            print("=" * 70)
-            print(f"\n✅ Hoàn thành sau {result.get('iteration', 0)} vòng lặp")
             print()
         
     except Exception as e:
