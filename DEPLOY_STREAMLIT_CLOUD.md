@@ -134,14 +134,62 @@ https://your-username-langgraph-multi-agent-app-xxxxx.streamlit.app
 
 ## 🔄 Cập nhật code
 
-### Mỗi khi sửa code:
+### Quy trình update tự động:
+
+Mỗi khi push code lên GitHub, Streamlit Cloud **tự động deploy** version mới!
+
+#### Bước 1: Sửa code và test local
 ```powershell
-git add .
-git commit -m "Update: description of changes"
-git push
+# Sửa code của bạn...
+
+# Test trước khi deploy
+streamlit run app.py
 ```
 
-→ Streamlit Cloud **tự động deploy** version mới!
+#### Bước 2: Commit và push
+```powershell
+# Xem các thay đổi
+git status
+
+# Thêm files
+git add .
+
+# Commit với message rõ ràng
+git commit -m "Update: mô tả thay đổi của bạn"
+
+# Push lên GitHub
+git push origin main
+```
+
+#### Bước 3: Theo dõi deployment
+1. Mở https://share.streamlit.io/
+2. Click vào app của bạn
+3. Xem Logs để đảm bảo deploy thành công
+4. App tự động restart (mất 1-3 phút)
+
+### Cập nhật API Keys hoặc Secrets:
+
+1. Dashboard → App → **⚙️ Settings** → **Secrets**
+2. Sửa nội dung secrets
+3. Click **Save**
+4. App tự động restart
+
+### Update Dependencies:
+
+Nếu thêm package mới vào `requirements.txt`:
+```powershell
+# Sửa requirements.txt
+git add requirements.txt
+git commit -m "Update: thêm package XYZ"
+git push
+```
+→ Streamlit Cloud tự động cài đặt dependencies mới!
+
+**📚 Xem hướng dẫn chi tiết:** [UPDATE_GUIDE.md](UPDATE_GUIDE.md) để biết thêm về:
+- Rollback về version cũ khi có lỗi
+- Versioning và backup strategies
+- CI/CD automation
+- Zero-downtime deployment
 
 ---
 
@@ -256,6 +304,14 @@ Tính năng:
 - Streamlit Docs: https://docs.streamlit.io/
 - Community Forum: https://discuss.streamlit.io/
 - GitHub Issues: https://github.com/streamlit/streamlit/issues
+
+---
+
+## 🚀 Next Steps
+
+- ✅ App đã deploy thành công lên Streamlit Cloud!
+- 🔄 Xem [UPDATE_GUIDE.md](UPDATE_GUIDE.md) để biết cách cập nhật app
+- 🐳 Hoặc xem [DEPLOY_DOCKER.md](DEPLOY_DOCKER.md) để deploy với Docker
 
 ---
 

@@ -130,14 +130,40 @@ docker stats langgraph-multi-agent
 docker restart langgraph-multi-agent
 ```
 
-### Update code
+### Update code (Quick)
+
+#### Cách nhanh nhất:
 ```powershell
-# Rebuild
+# Dừng, rebuild, và restart trong một lệnh
+docker-compose down && docker-compose build && docker-compose up -d
+```
+
+#### Hoặc từng bước:
+```powershell
+# 1. Dừng container
+docker-compose down
+
+# 2. Rebuild image với code mới
 docker-compose build
 
-# Restart với image mới
+# 3. Restart với image mới
 docker-compose up -d
+
+# 4. Xem logs để kiểm tra
+docker-compose logs -f
 ```
+
+#### Update không cần rebuild (chỉ prompts):
+```powershell
+# Nếu chỉ sửa prompts, restart là đủ
+docker-compose restart
+```
+
+**📚 Xem hướng dẫn chi tiết:** [UPDATE_GUIDE.md](UPDATE_GUIDE.md) để biết thêm về:
+- Rollback khi có lỗi
+- Update trên production server
+- Zero-downtime deployment
+- Best practices
 
 ---
 
@@ -190,4 +216,6 @@ docker-compose up -d
 
 ## 🚀 Next Steps
 
-Xem [DEPLOY_STREAMLIT_CLOUD.md](DEPLOY_STREAMLIT_CLOUD.md) để deploy miễn phí lên cloud!
+- ✅ App đã deploy thành công!
+- 📖 Xem [UPDATE_GUIDE.md](UPDATE_GUIDE.md) để biết cách cập nhật app sau này
+- ☁️ Hoặc xem [DEPLOY_STREAMLIT_CLOUD.md](DEPLOY_STREAMLIT_CLOUD.md) để deploy miễn phí lên cloud!

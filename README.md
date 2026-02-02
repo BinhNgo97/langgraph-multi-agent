@@ -175,6 +175,13 @@ ModuleNotFoundError: No module named 'langgraph'
 
 MIT License
 
+## 📚 Tài liệu thêm
+
+- **[DEPLOY_DOCKER.md](DEPLOY_DOCKER.md)** - Hướng dẫn deploy với Docker
+- **[DEPLOY_STREAMLIT_CLOUD.md](DEPLOY_STREAMLIT_CLOUD.md)** - Deploy miễn phí lên Streamlit Cloud
+- **[UPDATE_GUIDE.md](UPDATE_GUIDE.md)** - Hướng dẫn cập nhật app sau khi deploy
+- **[RUN_UI.md](RUN_UI.md)** - Hướng dẫn chạy giao diện UI
+
 ## 👥 Tác giả
 
 Hệ thống AI Multi-Agent với LangGraph
