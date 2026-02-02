@@ -36,7 +36,7 @@ class Settings:
             "input_normalizer": os.getenv("INPUT_NORMALIZER_MODEL", "gpt-4o-mini"),
             "proposer": os.getenv("PROPOSER_MODEL", "gpt-4o-mini"),
             "critic": os.getenv("CRITIC_MODEL", "gpt-4o"),
-            "challenger": os.getenv("CHALLENGER_MODEL", "claude-3-5-sonnet-20241022"),
+            "challenger": os.getenv("CHALLENGER_MODEL", "gpt-4o"),  # Changed from Claude to GPT-4o
             "synthesizer": os.getenv("SYNTHESIZER_MODEL", "gpt-4o"),
         }
         
