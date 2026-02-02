@@ -424,7 +424,7 @@ docker run -d \
 #### Sử dụng Docker commit backup:
 ```bash
 # Trước khi update, backup container hiện tại
-# Tạo tag với ngày hiện tại, ví dụ: langgraph-backup:20260202
+# Tạo tag với ngày hiện tại theo format YYYYMMDD, ví dụ: langgraph-backup:20240215
 docker commit langgraph-multi-agent langgraph-backup:$(date +%Y%m%d)
 
 # Nếu cần rollback, sử dụng tag đã tạo
@@ -433,7 +433,7 @@ docker rm langgraph-multi-agent
 docker run -d \
   --name langgraph-multi-agent \
   -p 8501:8501 \
-  langgraph-backup:20260202  # Thay bằng ngày backup của bạn
+  langgraph-backup:20240215  # Thay bằng ngày backup của bạn (format: YYYYMMDD)
 ```
 
 ### Với Git trên Server
