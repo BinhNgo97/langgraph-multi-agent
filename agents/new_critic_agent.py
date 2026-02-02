@@ -52,8 +52,8 @@ Nhiệm vụ: Phân tích kỹ lưỡng và chỉ ra:
    - Các yếu tố cần bổ sung
 """
     
-    # Sử dụng GPT-4o cho phân tích sâu
-    llm = settings.get_llm("openai", "gpt-4o")
+    # Sử dụng model được cấu hình cho agent này
+    llm = settings.get_agent_llm("critic")
     
     prompt = prompt_template.format(problem=problem, solution=solution)
     

@@ -65,8 +65,8 @@ Nhiệm vụ: Tổng hợp và đưa ra đánh giá toàn diện
    [Có nên áp dụng giải pháp này không? Tại sao?]
 """
     
-    # Sử dụng GPT-4o
-    llm = settings.get_llm("openai", "gpt-4o")
+    # Sử dụng model được cấu hình cho agent này
+    llm = settings.get_agent_llm("synthesizer")
     
     response = llm.invoke(prompt)
     synthesis = response.content

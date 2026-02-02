@@ -8,8 +8,8 @@ def input_normalizer_node(state: GraphState) -> GraphState:
     """
     raw_problem = state["raw_problem"]
     
-    # Sử dụng GPT-4o-mini để normalize input
-    llm = settings.get_llm("openai", "gpt-4o-mini")
+    # Sử dụng model được cấu hình cho agent này
+    llm = settings.get_agent_llm("input_normalizer")
     
     prompt = f"""Bạn là một chuyên gia phân tích vấn đề. Nhiệm vụ của bạn là làm rõ và chuẩn hóa vấn đề từ người dùng.
 

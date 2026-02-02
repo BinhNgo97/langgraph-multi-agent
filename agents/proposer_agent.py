@@ -37,8 +37,8 @@ Giải pháp của bạn phải:
 - Đề xuất cách đo lường thành công
 """
     
-    # Sử dụng GPT-4o-mini
-    llm = settings.get_llm("openai", "gpt-4o-mini")
+    # Sử dụng model được cấu hình cho agent này
+    llm = settings.get_agent_llm("proposer")
     
     prompt = prompt_template.format(context=context)
     

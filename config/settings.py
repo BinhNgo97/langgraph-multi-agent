@@ -31,11 +31,24 @@ class Settings:
         self.max_iterations = 5
         self.min_iterations = 2
         
+        # Agent-specific model settings (có thể override)
+        self.agent_models = {
+            "input_normalizer": os.getenv("INPUT_NORMALIZER_MODEL", "gpt-4o-mini"),
+            "proposer": os.getenv("PROPOSER_MODEL", "gpt-4o-mini"),
+            "critic": os.getenv("CRITIC_MODEL", "gpt-4o"),
+            "challenger": os.getenv("CHALLENGER_MODEL", "claude-3-5-sonnet-20241022"),
+            "synthesizer": os.getenv("SYNTHESIZER_MODEL", "gpt-4o"),
+        }
+        
         # Paths
         self.prompts_dir = Path(__file__).parent.parent / "prompts"
         
     def get_llm(self, provider="openai", model_override=None):
-        """Get LLM instance based on provider"""
+        """Get LLM instance based on provider and model"""
+        # Auto-detect provider from model name
+        if model_override and "claude" in model_override.lower():
+            provider = "anthropic"
+        
         if provider == "openai":
             from langchain_openai import ChatOpenAI
             return ChatOpenAI(
@@ -45,12 +58,25 @@ class Settings:
             )
         elif provider == "anthropic":
             from langchain_anthropic import ChatAnthropic
+            # Validate API key
+            if not self.anthropic_api_key:
+                raise ValueError("Anthropic API key not configured. Please add ANTHROPIC_API_KEY to .env")
             return ChatAnthropic(
-                model=model_override or "claude-3-5-sonnet-20241022",  # Updated to latest model
+                model=model_override or "claude-3-5-sonnet-20241022",
                 temperature=self.temperature,
                 api_key=self.anthropic_api_key
             )
         else:
             raise ValueError(f"Unknown provider: {provider}")
+    
+    def get_agent_llm(self, agent_name: str):
+        """Get LLM for specific agent based on configuration"""
+        model = self.agent_models.get(agent_name, self.model_name)
+        
+        # Auto-detect provider from model name
+        if "claude" in model.lower():
+            return self.get_llm("anthropic", model)
+        else:
+            return self.get_llm("openai", model)
 
 settings = Settings()

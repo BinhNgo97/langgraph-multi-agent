@@ -45,9 +45,13 @@ Nhiệm vụ của bạn: Tìm các PHẢN VÍ DỤ và EDGE CASES
    - Các chỉ số cảnh báo sớm
 """
     
-    # Dùng GPT-4o-mini (ổn định hơn)
-    # Claude có thể không khả dụng hoặc API key không hợp lệ
-    llm = settings.get_llm("openai", "gpt-4o-mini")
+    # Sử dụng model được cấu hình cho agent này (mặc định: Claude)
+    try:
+        llm = settings.get_agent_llm("challenger")
+    except ValueError as e:
+        # Nếu không có API key Claude, fallback sang GPT
+        print(f"Warning: {e}. Falling back to GPT-4o-mini")
+        llm = settings.get_llm("openai", "gpt-4o-mini")
     
     response = llm.invoke(prompt)
     counterexample = response.content
